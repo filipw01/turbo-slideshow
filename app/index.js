@@ -1,7 +1,10 @@
+const path = require("path");
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const { hash } = require("bcrypt");
 const { nanoid } = require("nanoid");
+const cookieParser = require("cookie-parser");
 const app = express();
 require("dotenv").config();
 
@@ -18,7 +21,21 @@ const roomSchema = new mongoose.Schema({
 
 const Room = new mongoose.model("Room", roomSchema);
 
-app.post("/room", async (req, res) => {
+const public = path.join(__dirname, "frontend", "dist");
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.static(public));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(public, "index.html"));
+});
+app.post("/create", async (req, res) => {
   const { name, password } = req.body;
   const adminId = nanoid();
   try {
@@ -28,11 +45,12 @@ app.post("/room", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-  res.cookie.set("adminId", adminId);
+  console.log(adminId);
+  res.cookie("adminId", adminId, { httpOnly: true });
   res.send(adminId);
 });
 
-app.get("/room/:roomName", (req, res) => {
+app.get("/join/:roomName", (req, res) => {
   mongoose.model.findOne("Room", { name: roomName }, (error, room) => {
     if (error) {
       console.error(error);
