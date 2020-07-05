@@ -1,5 +1,6 @@
 <template>
   <div class="flex-column">
+    <hello-world msg="test" />
     <label
       >Nazwa pokoju
       <input type="text" v-model="roomName" />
@@ -8,46 +9,42 @@
       >Hasło pokoju
       <input type="password" v-model="roomPassword" />
     </label>
-    <button @click="createRoom">Create room</button>
+    <button :disabled="!connected" @click="createRoom">Create room</button>
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
-
-const webSocket = new WebSocket("ws://localhost/socket.io");
-webSocket.onopen = (event) => {
-  console.log(event);
-};
+import io from 'socket.io-client';
+import HelloWorld from './components/HelloWorld.vue';
 
 export default {
-  name: "App",
+  name: 'App',
   components: {
     HelloWorld,
   },
   data() {
     return {
-      roomName: "",
-      roomPassword: "",
+      roomName: '',
+      roomPassword: '',
+      socket: {},
+      connected: false,
     };
+  },
+  mounted() {
+    this.socket = io('http://localhost:8080');
+    this.socket.on('connect', () => {
+      this.connected = true;
+    });
+    this.socket.on('create/success', (arg) => {
+      console.log(arg);
+    });
+    this.socket.on('create/error', (arg) => {
+      console.log(arg);
+    });
   },
   methods: {
     async createRoom() {
-      const response = await fetch("http://localhost:8080/create", {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: this.name,
-          password: this.roomPassword,
-        }),
-      });
-      const data = await response.json();
-      if (data.success) {
-      }
-      console.log(data);
+      this.socket.emit('create', { name: this.roomName, password: this.roomPassword });
     },
   },
 };
