@@ -1,15 +1,5 @@
 <template>
-  <div class="flex-column">
-    <label
-      >Nazwa pokoju
-      <input type="text" v-model="roomName" />
-    </label>
-    <label
-      >Hasło pokoju
-      <input type="password" v-model="roomPassword" />
-    </label>
-    <button :disabled="!connected" @click="createRoom">Create room</button>
-  </div>
+  <div class="flex-column"><button @click="changePage">Change Page</button></div>
 </template>
 
 <script>
@@ -20,29 +10,19 @@ export default {
   },
   data() {
     return {
-      connected: false,
+      connected: this.socket.connected,
       roomName: '',
       roomPassword: '',
     };
   },
   mounted() {
-    this.socket.on('connect', () => {
-      this.connected = true;
-    });
-    this.socket.on('disconnect', () => {
-      this.connected = false;
-    });
-    this.socket.on('create/success', (arg) => {
-      console.log(arg);
-      this.$router.push('/');
-    });
-    this.socket.on('create/error', (arg) => {
+    this.socket.on('changePage', (arg) => {
       console.log(arg);
     });
   },
   methods: {
-    async createRoom() {
-      this.socket.emit('create', { name: this.roomName, password: this.roomPassword });
+    changePage() {
+      this.socket.emit('changePage', 1);
     },
   },
 };

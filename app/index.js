@@ -1,7 +1,7 @@
 const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
-const { hash } = require("bcrypt");
+const { hash, compare } = require("bcrypt");
 const app = express();
 require("dotenv").config();
 
@@ -14,7 +14,6 @@ const roomSchema = new mongoose.Schema({
   name: String,
   password: String,
   adminId: String,
-  participants: Number,
 });
 
 const Room = new mongoose.model("Room", roomSchema);
@@ -34,7 +33,6 @@ const listeningApp = app.listen(port, () =>
 const io = require("socket.io")(listeningApp);
 io.on("connect", (socket) => {
   socket.on("create", ({ name, password }) => {
-    console.log();
     Room.findOne({ name }, async (error, room) => {
       if (error || room) {
         return socket.emit("create/error", error);
@@ -54,17 +52,24 @@ io.on("connect", (socket) => {
     });
   });
 
-  socket.on("join", ({ roomName, password }) => {
-    Room.findOne({ name: roomName }, (error, room) => {
+  socket.on("join", ({ name, password }) => {
+    Room.findOne({ name }, async (error, room) => {
       if (error) {
         console.error(error);
       }
-      if (room && room.password === password) {
-        Room.updateOne(
-          { name: roomName },
-          { participants: room.participants + 1 }
-        );
-        socket.join(`room:${roomName}`);
+      const correctPassword = await compare(password, room.password);
+      if (room && correctPassword) {
+        socket.join(`room:${name}`);
+        return socket.emit("join/success");
+      }
+      socket.emit("join/error");
+    });
+  });
+
+  socket.on("changePage", (pageNumber) => {
+    Room.findOne({ adminId: socket.id }, (error, room) => {
+      if (!error && room) {
+        socket.to(`room:${room.name}`).emit("changePage", pageNumber);
       }
     });
   });
@@ -72,21 +77,14 @@ io.on("connect", (socket) => {
   socket.on("disconnecting", () => {
     const rooms = Object.values(socket.rooms);
     for (const room of rooms) {
-      if ((room.participants = 1)) {
-        Room.deleteOne({ name: room.name });
-        continue;
-      } else {
-        Room.updateOne(
-          { name: room.name },
-          { participants: room.participants - 1 }
-        );
-      }
-      Room.findOne({ adminId: socket.id }, (error, databaseRoom) => {
+      Room.findOne({ name: room.slice(5) }, (error, databaseRoom) => {
         if (error) {
           console.error(error);
         }
         if (databaseRoom) {
-          Room.deleteOne({ name: databaseRoom.name }, () => {});
+          if (databaseRoom.adminId === socket.id) {
+            Room.deleteOne({ name: databaseRoom.name }, function (err) {});
+          }
         }
       });
     }

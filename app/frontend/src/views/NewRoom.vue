@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      connected: false,
+      connected: this.socket.connected,
       roomName: '',
       roomPassword: '',
     };
@@ -34,7 +34,9 @@ export default {
     });
     this.socket.on('create/success', (arg) => {
       console.log(arg);
-      this.$router.push('/');
+      this.$router.push(`/room/${this.roomName}`);
+      this.socket.emit('join', { name: this.roomName, password: this.roomPassword });
+      this.$router.push(`/room/${this.roomName}`);
     });
     this.socket.on('create/error', (arg) => {
       console.log(arg);

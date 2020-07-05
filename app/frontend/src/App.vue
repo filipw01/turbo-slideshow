@@ -3,25 +3,8 @@
     <hello-world msg="test" />
     <router-link to="/">Home</router-link>
     <router-link to="/new-room">Create</router-link>
-    <Suspense>
-      <template #default>
-        <router-view :name="viewName" v-slot="{ Component }">
-          <transition
-            name="fade"
-            mode="out-in"
-            @before-enter="flushWaiter"
-            @before-leave="setupWaiter"
-          >
-            <keep-alive>
-              <component :is="Component" />
-            </keep-alive>
-          </transition>
-        </router-view>
-      </template>
-      <template #fallback>
-        Loading...
-      </template>
-    </Suspense>
+    <router-link to="/join-room">Join</router-link>
+    <router-view></router-view>
   </div>
 </template>
 
