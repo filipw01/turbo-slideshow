@@ -4,9 +4,11 @@ services:
     build: .
     ports:
       - "8080:8080"
+      - "80:80"
     depends_on:
       - mongo
+    volumes:
+      - ./app:/usr/src/app
+      - /usr/src/app/node_modules
   mongo:
     image: mongo
-    ports:
-      - "27017:27017"
