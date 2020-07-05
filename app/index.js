@@ -1,6 +1,5 @@
 const path = require("path");
 const express = require("express");
-const cors = require("cors");
 const mongoose = require("mongoose");
 const { hash } = require("bcrypt");
 const app = express();
@@ -23,22 +22,22 @@ const Room = new mongoose.model("Room", roomSchema);
 const public = path.join(__dirname, "frontend", "dist");
 
 app.use(express.static(public));
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
 
 app.get("/", (_req, res) => {
   res.sendFile(path.join(public, "index.html"));
 });
+const port = process.env.PORT !== undefined ? process.env.PORT : 8080;
+const listeningApp = app.listen(port, () =>
+  console.log(`Listening on ${port}`)
+);
 
-const io = require("socket.io")({ serveClient: false });
+const io = require("socket.io")(listeningApp);
 io.on("connect", (socket) => {
-  socket.on("create", ({ roomName, password }) => {
-    Room.findOne({ name: roomName }, async (error, room) => {
+  socket.on("create", ({ name, password }) => {
+    console.log();
+    Room.findOne({ name }, async (error, room) => {
       if (error || room) {
-        return;
+        return socket.emit("create/error", error);
       }
       try {
         const hashedPassword = await hash(password, 10);
@@ -48,8 +47,9 @@ io.on("connect", (socket) => {
           adminId: socket.id,
         });
         await doc.save();
+        return socket.emit("create/success", room);
       } catch (error) {
-        console.error(error);
+        return socket.emit("create/error", error);
       }
     });
   });
@@ -70,7 +70,7 @@ io.on("connect", (socket) => {
   });
 
   socket.on("disconnecting", () => {
-    const rooms = socket.rooms.slice();
+    const rooms = Object.values(socket.rooms);
     for (const room of rooms) {
       if ((room.participants = 1)) {
         Room.deleteOne({ name: room.name });
@@ -92,6 +92,3 @@ io.on("connect", (socket) => {
     }
   });
 });
-
-const port = process.env.PORT !== undefined ? process.env.PORT : 8080;
-app.listen(port, () => console.log(`Listening on ${port}`));
