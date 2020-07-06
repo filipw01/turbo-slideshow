@@ -32,12 +32,14 @@ export default {
     this.socket.on('disconnect', () => {
       this.connected = false;
     });
+    this.socket.off('create/success');
     this.socket.on('create/success', (arg) => {
       console.log(arg);
       this.$router.push(`/room/${this.roomName}`);
       this.socket.emit('join', { name: this.roomName, password: this.roomPassword });
       this.$router.push(`/room/${this.roomName}`);
     });
+    this.socket.off('create/error');
     this.socket.on('create/error', (arg) => {
       console.log(arg);
     });
