@@ -1,6 +1,5 @@
 import io from 'socket.io-client';
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from './views/Home.vue';
 import NewRoom from './views/NewRoom.vue';
 import JoinRoom from './views/JoinRoom.vue';
 import Room from './views/Room.vue';
@@ -12,17 +11,12 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: Home,
-      props: { socket },
-    },
-    {
-      path: '/new-room',
-      component: NewRoom,
-      props: { socket },
-    },
-    {
-      path: '/join-room',
       component: JoinRoom,
+      props: { socket },
+    },
+    {
+      path: '/create-room',
+      component: NewRoom,
       props: { socket },
     },
     {

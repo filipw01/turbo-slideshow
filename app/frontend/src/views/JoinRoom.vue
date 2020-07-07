@@ -1,14 +1,19 @@
 <template>
   <div class="flex-column">
-    <label
-      >Nazwa pokoju
+    <h2 style="
+    font-size: 34px;
+    line-height: 40px;
+    ">Join Room</h2>
+    <label>
+      Nazwa pokoju
       <input type="text" v-model="roomName" />
     </label>
-    <label
-      >Hasło pokoju
+    <label>
+      Hasło pokoju
       <input type="password" v-model="roomPassword" />
     </label>
     <button :disabled="!connected" @click="joinRoom">Join room</button>
+    <router-link to="/create-room">Create</router-link>
   </div>
 </template>
 
@@ -42,7 +47,10 @@ export default {
   },
   methods: {
     async joinRoom() {
-      this.socket.emit('join', { name: this.roomName, password: this.roomPassword });
+      this.socket.emit('join', {
+        name: this.roomName,
+        password: this.roomPassword,
+      });
     },
   },
 };
