@@ -1,17 +1,6 @@
 <template>
   <div class="flex-column">
-    <h2
-      style="
-      margin-top: 0;
-    margin-bottom: 24px;
-    font-size: 34px;
-    font-weight: 500;
-    line-height: 40px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    "
-    >
+    <h2 class="title">
       Create Room
     </h2>
     <label>
@@ -28,6 +17,7 @@
 
 <script>
 import useSocketConnect from '../compositions/socketConnect';
+import useSocketEvent from '../compositions/socketEvent';
 
 export default {
   name: 'App',
@@ -41,20 +31,7 @@ export default {
     };
   },
   setup(props) {
-    return {
-      ...useSocketConnect(props.socket),
-    };
-  },
-  mounted() {
-    this.socket.on('create/success', this.createSuccessHandler);
-    this.socket.on('create/error', this.createErrorHandler);
-  },
-  beforeUnmount() {
-    this.socket.off('create/success', this.createSuccessHandler);
-    this.socket.off('create/error', this.createErrorHandler);
-  },
-  methods: {
-    createSuccessHandler() {
+    function createSuccess() {
       sessionStorage.setItem('roomPassword', this.roomPassword);
       this.$router.push(`/room/${this.roomName}`);
       this.socket.emit('join', {
@@ -62,10 +39,17 @@ export default {
         password: this.roomPassword,
       });
       this.$router.push(`/room/${this.roomName}`);
-    },
-    createErrorHandler(arg) {
+    }
+    function createError(arg) {
       console.log(arg);
-    },
+    }
+    return {
+      ...useSocketConnect(props.socket),
+      ...useSocketEvent(props.socket, 'create/success', createSuccess),
+      ...useSocketEvent(props.socket, 'create/error', createError),
+    };
+  },
+  methods: {
     async createRoom() {
       this.socket.emit('create', {
         name: this.roomName,
@@ -76,6 +60,16 @@ export default {
 };
 </script>
 <style scoped>
+.title {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 40px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+}
 .flex-column {
   display: flex;
   flex-direction: column;

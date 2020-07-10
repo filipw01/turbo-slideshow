@@ -1,17 +1,6 @@
 <template>
   <div class="flex-column">
-    <h2
-      style="
-      margin-top: 0;
-    margin-bottom: 24px;
-    font-size: 34px;
-    font-weight: 500;
-    line-height: 40px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    "
-    >
+    <h2 class="title">
       Join Room
     </h2>
     <label>
@@ -23,12 +12,13 @@
       <input type="password" v-model="roomPassword" />
     </label>
     <button :disabled="!connected" @click="joinRoom">Join</button>
-    <router-link class="create-link" to="/create-room">or create your own room</router-link>
+    <router-link class="new-room-link" to="/create-room">or create your own room</router-link>
   </div>
 </template>
 
 <script>
 import useSocketConnect from '../compositions/socketConnect';
+import useSocketEvent from '../compositions/socketEvent';
 
 export default {
   name: 'App',
@@ -42,26 +32,20 @@ export default {
     };
   },
   setup(props) {
-    return {
-      ...useSocketConnect(props.socket),
-    };
-  },
-  mounted() {
-    this.socket.on('join/success', this.joinSuccess);
-    this.socket.on('join/error', this.joinError);
-  },
-  beforeUnmount() {
-    this.socket.off('join/success', this.joinSuccess);
-    this.socket.off('join/error', this.joinError);
-  },
-  methods: {
-    joinSuccess() {
+    function joinSuccess() {
       sessionStorage.setItem('roomPassword', this.roomPassword);
       this.$router.push(`/room/${this.roomName}`);
-    },
-    joinError(arg) {
+    }
+    function joinError(arg) {
       console.log(arg);
-    },
+    }
+    return {
+      ...useSocketConnect(props.socket),
+      ...useSocketEvent(props.socket, 'join/success', joinSuccess),
+      ...useSocketEvent(props.socket, 'join/error', joinError),
+    };
+  },
+  methods: {
     async joinRoom() {
       this.socket.emit('join', {
         name: this.roomName,
@@ -72,12 +56,22 @@ export default {
 };
 </script>
 <style scoped>
+.title {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 40px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+}
 .flex-column {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.create-link {
+.new-room-link {
   margin-top: 18px;
   color: #1c51a0;
   text-decoration: none;
