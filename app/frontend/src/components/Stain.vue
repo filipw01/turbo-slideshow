@@ -55,7 +55,7 @@ export default {
     size: {
       type: String,
       validator(value) {
-        ['small', 'medium', 'large'].includes(value);
+        return ['small', 'medium', 'large'].includes(value);
       },
     },
   },

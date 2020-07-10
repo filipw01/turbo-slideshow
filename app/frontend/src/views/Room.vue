@@ -1,7 +1,7 @@
 <template>
   <div class="flex-column">
-    <label
-      >Prezentacja
+    <label>
+      Prezentacja
       <input type="file" ref="file" />
     </label>
     <button @click="() => changePage(pageNumber - 1)">-</button>
@@ -21,12 +21,19 @@ export default {
   },
   data() {
     return {
-      roomPassword: 'a',
       pdf: null,
       pageNumber: 0,
     };
   },
   mounted() {
+    const password = sessionStorage.getItem('roomPassword');
+    this.socket.emit('join', {
+      name: this.$route.params.roomId,
+      password,
+    });
+    this.socket.on('join/error', () => {
+      this.$router.go(-1);
+    });
     const uploader = new SocketIOFileUpload(this.socket);
     uploader.listenOnInput(this.$refs.file);
     this.socket.off('changePage');
@@ -42,7 +49,7 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          password: this.roomPassword,
+          password,
         }),
       })
         .then((response) => response.arrayBuffer())

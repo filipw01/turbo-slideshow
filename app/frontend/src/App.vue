@@ -76,12 +76,36 @@ body {
 input {
   display: block;
   height: 50px;
+  text-indent: 16px;
+  padding: 0;
   border: 1px solid #d6d6d6;
   border-radius: 12px;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 24px;
 }
 label {
+  margin: 0;
   color: #adadad;
   font-size: 16px;
   line-height: 19px;
+  width: 100%;
+}
+button {
+  font-size: 18px;
+  padding: 10px 24px;
+  border: none;
+  min-width: 170px;
+  border-radius: 12px;
+  color: white;
+  background-color: #1c51a0;
+  cursor: pointer;
+  box-shadow: 0px 12px 20px rgba(104, 104, 104, 0.14),
+    0px 6px 12px rgba(28, 81, 160, 0.12), 0px 2px 6px rgba(104, 104, 104, 0.13),
+    0px 1px 4px rgba(104, 104, 104, 0.2);
+}
+button:disabled {
+  color: #777;
+  background-color: #ddd;
 }
 </style>
