@@ -2,8 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const SocketIOFileUpload = require("socketio-file-upload");
 const path = require("path");
-
+const Room = require("./database");
 const publicPath = path.join(__dirname, "frontend", "dist");
+const { compare } = require("bcrypt");
 
 const app = express();
 app.use(express.static(publicPath));
@@ -15,11 +16,12 @@ app.get("/", (_req, res) => {
   res.sendFile(path.join(publicPath, "index.html"));
 });
 
-app.post("/srv/:adminSocketId/:fileName", (req, res) => {
-  const password = req.body.password;
-  Room.findOne({ adminId: req.params.adminSocketId }, async (error, room) => {
+app.post("/srv/:adminId/:fileName", (req, res) => {
+  const { password } = req.body;
+  const { adminId } = req.params;
+  Room.findOne({ adminId }, async (error, room) => {
     if (!room || error) {
-      return res.send({ error });
+      return res.send({ error: "Presentation file couldn't be downloaded" });
     }
     const correctPassword = compare(password, room.password);
     if (correctPassword) {
