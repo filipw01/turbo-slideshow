@@ -76,8 +76,10 @@ a {
   background-color: white;
   padding: 48px;
   border-radius: 12px;
-  box-shadow: 0px 12px 20px rgba(104, 104, 104, 0.14), 0px 6px 12px rgba(104, 104, 104, 0.12),
-    0px 2px 6px rgba(104, 104, 104, 0.13), 0px 1px 4px rgba(104, 104, 104, 0.2);
+  box-shadow: 0px 12px 20px rgba(104, 104, 104, 0.14),
+    0px 6px 12px rgba(104, 104, 104, 0.12),
+    0px 2px 6px rgba(104, 104, 104, 0.13),
+    0px 1px 4px rgba(104, 104, 104, 0.2);
 }
 </style>
 <style>
@@ -111,8 +113,10 @@ button {
   color: white;
   background-color: #1c51a0;
   cursor: pointer;
-  box-shadow: 0px 12px 20px rgba(104, 104, 104, 0.14), 0px 6px 12px rgba(28, 81, 160, 0.12),
-    0px 2px 6px rgba(104, 104, 104, 0.13), 0px 1px 4px rgba(104, 104, 104, 0.2);
+  box-shadow: 0px 12px 20px rgba(104, 104, 104, 0.14),
+    0px 6px 12px rgba(28, 81, 160, 0.12),
+    0px 2px 6px rgba(104, 104, 104, 0.13),
+    0px 1px 4px rgba(104, 104, 104, 0.2);
 }
 button:disabled {
   color: #777;

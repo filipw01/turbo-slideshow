@@ -1,8 +1,6 @@
 <template>
   <div class="flex-column">
-    <h2 class="title">
-      Create Room
-    </h2>
+    <h2 class="title">Create Room</h2>
     <label>
       Nazwa pokoju
       <input type="text" v-model="roomName" />
@@ -11,11 +9,15 @@
       Hasło pokoju
       <input type="password" v-model="roomPassword" />
     </label>
-    <button :disabled="!connected" @click="createRoom">Create room</button>
+    <button :disabled="!connected" @click="createRoom">
+      Create room
+    </button>
   </div>
 </template>
 
 <script>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import useSocketConnect from '../compositions/socketConnect';
 import useSocketEvent from '../compositions/socketEvent';
 
@@ -24,38 +26,52 @@ export default {
   props: {
     socket: Object,
   },
-  data() {
-    return {
-      roomName: '',
-      roomPassword: '',
-    };
-  },
-  setup(props) {
+  setup(props, { emit }) {
+    const router = useRouter();
+    // TODO: Too many pdf updates
+    // TODO: Add error display
+    // TODO: Add comments
+    // TODO: Add room styling
+    // TODO: Add mobile styling
+    const roomName = ref('');
+    const roomPassword = ref('');
+    function createRoom() {
+      props.socket.emit('create', {
+        name: roomName.value,
+        password: roomPassword.value,
+      });
+    }
     function createSuccess() {
-      sessionStorage.setItem('roomPassword', this.roomPassword);
-      this.$router.push(`/room/${this.roomName}`);
-      this.socket.emit('join', {
-        name: this.roomName,
-        password: this.roomPassword,
+      sessionStorage.setItem(
+        'roomPassword',
+        roomPassword.value,
+      );
+      router.push(`/room/${roomName.value}`);
+      props.socket.emit('join', {
+        name: roomName.value,
+        password: roomPassword.value,
       });
-      this.$router.push(`/room/${this.roomName}`);
+      router.push(`/room/${roomName.value}`);
     }
-    function createError(arg) {
-      console.log(arg);
+    function createError(error) {
+      emit('error', error);
     }
     return {
+      roomName,
+      roomPassword,
+      createRoom,
       ...useSocketConnect(props.socket),
-      ...useSocketEvent(props.socket, 'create/success', createSuccess),
-      ...useSocketEvent(props.socket, 'create/error', createError),
+      ...useSocketEvent(
+        props.socket,
+        'create/success',
+        createSuccess,
+      ),
+      ...useSocketEvent(
+        props.socket,
+        'create/error',
+        createError,
+      ),
     };
-  },
-  methods: {
-    async createRoom() {
-      this.socket.emit('create', {
-        name: this.roomName,
-        password: this.roomPassword,
-      });
-    },
   },
 };
 </script>
@@ -66,9 +82,10 @@ export default {
   font-size: 34px;
   font-weight: 500;
   line-height: 40px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    'Noto Color Emoji';
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
 }
 .flex-column {
   display: flex;

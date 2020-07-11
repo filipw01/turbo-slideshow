@@ -25,7 +25,7 @@ function setup(io) {
           await doc.save();
           socket.emit("create/success", room);
 
-          setupFileUpload();
+          setupFileUpload(socket);
         } catch (error) {
           return socket.emit("create/error", error);
         }

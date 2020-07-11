@@ -1,8 +1,6 @@
 <template>
   <div class="flex-column">
-    <h2 class="title">
-      Join Room
-    </h2>
+    <h2 class="title">Join Room</h2>
     <label>
       Nazwa pokoju
       <input type="text" v-model="roomName" />
@@ -11,12 +9,18 @@
       Hasło pokoju
       <input type="password" v-model="roomPassword" />
     </label>
-    <button :disabled="!connected" @click="joinRoom">Join</button>
-    <router-link class="new-room-link" to="/create-room">or create your own room</router-link>
+    <button :disabled="!connected" @click="joinRoom">
+      Join
+    </button>
+    <router-link class="new-room-link" to="/create-room"
+      >or create your own room</router-link
+    >
   </div>
 </template>
 
 <script>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import useSocketConnect from '../compositions/socketConnect';
 import useSocketEvent from '../compositions/socketEvent';
 
@@ -25,33 +29,42 @@ export default {
   props: {
     socket: Object,
   },
-  data() {
-    return {
-      roomName: '',
-      roomPassword: '',
-    };
-  },
-  setup(props) {
-    function joinSuccess() {
-      sessionStorage.setItem('roomPassword', this.roomPassword);
-      this.$router.push(`/room/${this.roomName}`);
-    }
-    function joinError(arg) {
-      console.log(arg);
-    }
-    return {
-      ...useSocketConnect(props.socket),
-      ...useSocketEvent(props.socket, 'join/success', joinSuccess),
-      ...useSocketEvent(props.socket, 'join/error', joinError),
-    };
-  },
-  methods: {
-    async joinRoom() {
-      this.socket.emit('join', {
-        name: this.roomName,
-        password: this.roomPassword,
+  setup(props, { emit }) {
+    const router = useRouter();
+    const roomName = ref('');
+    const roomPassword = ref('');
+    async function joinRoom() {
+      props.socket.emit('join', {
+        name: roomName.value,
+        password: roomPassword.value,
       });
-    },
+    }
+    function joinSuccess() {
+      sessionStorage.setItem(
+        'roomPassword',
+        roomPassword.value,
+      );
+      router.push(`/room/${roomName.value}`);
+    }
+    function joinError(error) {
+      emit('error', error);
+    }
+    return {
+      roomName,
+      roomPassword,
+      joinRoom,
+      ...useSocketConnect(props.socket),
+      ...useSocketEvent(
+        props.socket,
+        'join/success',
+        joinSuccess,
+      ),
+      ...useSocketEvent(
+        props.socket,
+        'join/error',
+        joinError,
+      ),
+    };
   },
 };
 </script>
@@ -62,9 +75,10 @@ export default {
   font-size: 34px;
   font-weight: 500;
   line-height: 40px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    'Noto Color Emoji';
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
 }
 .flex-column {
   display: flex;

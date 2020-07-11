@@ -2,17 +2,21 @@ const fs = require("fs");
 const path = require("path");
 const SocketIOFileUpload = require("socketio-file-upload");
 const libre = require("libreoffice-convert");
+const Room = require("./database");
 
 function updateRoomFilePath(socket, filePath) {
   Room.findOne({ adminId: socket.id }, (error, room) => {
-    if (error || !room.presentationPath) {
+    if (error) {
       throw "Couldn't update presentation file";
     }
-    fs.unlink(room.presentationPath, (err) => {
-      if (err) throw "Couldn't update presentation file";
-      console.log(room.presentationPath, "was deleted");
-    });
+    if (room.presentationPath) {
+      fs.unlink(room.presentationPath, (err) => {
+        if (err) throw "Couldn't update presentation file";
+        console.log(room.presentationPath, "was deleted");
+      });
+    }
   });
+
   Room.findOneAndUpdate(
     { adminId: socket.id },
     { presentationPath: filePath },
@@ -20,19 +24,16 @@ function updateRoomFilePath(socket, filePath) {
       if (!error && room) {
         console.log(filePath, "has been received");
         socket.to(`room:${room.name}`).emit("changePresentation", filePath);
-        socket.emit("changePresentation", filePath);
-      } else {
-        socket.emit(
-          "changePresentation/error",
-          "Couldn't update presentation file"
-        );
+        return socket.emit("changePresentation", filePath);
       }
+      throw "Couldn't update presentation file";
     }
   );
 }
 
 function setup(socket) {
   const fileUpload = new SocketIOFileUpload();
+  const uploadDir = `/srv/${socket.id}`;
   fs.mkdirSync(uploadDir);
   fileUpload.dir = uploadDir;
   fileUpload.listen(socket);
