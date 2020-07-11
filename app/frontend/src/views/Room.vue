@@ -19,8 +19,12 @@
 import { ref, onMounted, watch } from 'vue';
 import SocketIOFileUpload from 'socketio-file-upload';
 import { useRoute, useRouter } from 'vue-router';
-import pdfjs from 'pdfjs-dist/webpack';
 import useSocketEvent from '../compositions/socketEvent';
+import {
+  queueRenderPage,
+  setPdfSource,
+  getPdf,
+} from '../compositions/renderPdf';
 
 export default {
   name: 'App',
@@ -30,51 +34,12 @@ export default {
   setup(props, { emit }) {
     const route = useRoute();
     const router = useRouter();
-    const pageNumber = ref(0);
     const canvas = ref(null);
     const file = ref(null);
-    const pdf = ref(null);
-    let pageRendering = false;
-    let pageNumPending = null;
-    async function renderPage(num) {
-      pageRendering = true;
-      const page = await pdf.value.getPage(num);
-      const scale = 1.5;
-      const viewport = page.getViewport({ scale });
-
-      // Prepare canvas using PDF page dimensions
-      const context = canvas.value.getContext('2d');
-      canvas.value.height = viewport.height;
-      canvas.value.width = viewport.width;
-
-      // Render PDF page into canvas context
-      const renderContext = {
-        canvasContext: context,
-        viewport,
-      };
-
-      const renderTask = page.render(renderContext);
-
-      renderTask.promise.then(() => {
-        pageRendering = false;
-        if (pageNumPending !== null) {
-          // New page rendering is pending
-          renderPage(pageNumPending);
-          pageNumPending = null;
-        }
-      });
-    }
-    function queueRenderPage(num) {
-      console.log(num);
-      if (pageRendering) {
-        pageNumPending = num;
-      } else {
-        renderPage(num);
-      }
-    }
+    const pageNumber = ref(0);
 
     function changePageHandle(newPageNumber) {
-      const { numPages } = pdf.value;
+      const { numPages } = getPdf();
       if (newPageNumber < 1 || newPageNumber > numPages) {
         return;
       }
@@ -97,9 +62,7 @@ export default {
         .then((response) => response.arrayBuffer())
         .then(async (arrayBuffer) => {
           const source = new Uint8Array(arrayBuffer);
-          pdf.value = await pdfjs.getDocument({
-            data: source,
-          }).promise;
+          await setPdfSource(source);
           pageNumber.value = 1;
         })
         .catch((err) => emit('error', err));
@@ -122,11 +85,10 @@ export default {
       props.socket.emit('changePage', newPageNumber);
     }
     watch(pageNumber, () => {
-      queueRenderPage(pageNumber.value);
+      queueRenderPage(pageNumber.value, canvas.value);
     });
     return {
       changePage,
-      pdf,
       pageNumber,
       file,
       canvas,
@@ -154,8 +116,5 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-.flex-column > * {
-  margin: 6px 0;
 }
 </style>
