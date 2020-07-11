@@ -28,7 +28,6 @@ export default {
   },
   setup(props, { emit }) {
     const router = useRouter();
-    // TODO: Add room styling
     // TODO: Add mobile styling
     const roomName = ref('');
     const roomPassword = ref('');
@@ -44,7 +43,7 @@ export default {
         'roomPassword',
         roomPassword.value,
       );
-      router.push(`/room/${roomName.value}`);
+      router.push(`/room/${roomName.value}/?admin=true`);
       props.socket.emit('join', {
         name: roomName.value,
         password: roomPassword.value,

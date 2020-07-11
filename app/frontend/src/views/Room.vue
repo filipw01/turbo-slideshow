@@ -1,16 +1,29 @@
 <template>
   <div class="flex-column">
-    <label>
-      Prezentacja
-      <input type="file" ref="file" />
-    </label>
-    <button @click="() => changePage(pageNumber - 1)">
-      -
-    </button>
-    {{ pageNumber }}
-    <button @click="() => changePage(pageNumber + 1)">
-      +
-    </button>
+    <div class="controls">
+      <label v-if="isAdmin" class="file-label">
+        Change presentation
+        <input type="file" ref="file" />
+      </label>
+      <button
+        v-if="isAdmin"
+        @click="() => changePage(pageNumber - 1)"
+        class="change-page-button"
+      >
+        -
+      </button>
+      <span style="margin-right: 4px" v-if="!isAdmin"
+        >Slide number:</span
+      >
+      {{ pageNumber }}
+      <button
+        v-if="isAdmin"
+        @click="() => changePage(pageNumber + 1)"
+        class="change-page-button"
+      >
+        +
+      </button>
+    </div>
     <canvas ref="canvas"></canvas>
   </div>
 </template>
@@ -37,6 +50,10 @@ export default {
     const canvas = ref(null);
     const file = ref(null);
     const pageNumber = ref(0);
+    const isAdmin = ref(false);
+    if (route.query.admin === 'true') {
+      isAdmin.value = true;
+    }
 
     function changePageHandle(newPageNumber) {
       const { numPages } = getPdf();
@@ -79,8 +96,12 @@ export default {
         name: route.params.roomId,
         password,
       });
-      const uploader = new SocketIOFileUpload(props.socket);
-      uploader.listenOnInput(file.value);
+      if (file.value) {
+        const uploader = new SocketIOFileUpload(
+          props.socket,
+        );
+        uploader.listenOnInput(file.value);
+      }
     });
     function changePage(newPageNumber) {
       props.socket.emit('changePage', newPageNumber);
@@ -89,6 +110,7 @@ export default {
       queueRenderPage(pageNumber.value, canvas.value);
     });
     return {
+      isAdmin,
       changePage,
       pageNumber,
       file,
@@ -113,6 +135,35 @@ export default {
 };
 </script>
 <style scoped>
+canvas {
+  max-width: 100%;
+  max-height: 80vh;
+  box-shadow: 0px 12px 20px rgba(104, 104, 104, 0.14),
+    0px 6px 12px rgba(104, 104, 104, 0.12),
+    0px 2px 6px rgba(104, 104, 104, 0.13),
+    0px 1px 4px rgba(104, 104, 104, 0.2);
+}
+.controls {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.change-page-button {
+  min-width: auto;
+  margin: 0 8px;
+  padding: 6px 10px;
+}
+.file-label {
+  padding: 10px 24px;
+  background-color: #1c51a0;
+  color: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+}
+.file-label input {
+  display: none;
+}
 .flex-column {
   display: flex;
   flex-direction: column;

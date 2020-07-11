@@ -36,7 +36,7 @@ export async function renderPage(num, canvasArgument) {
   renderTask.promise.then(() => {
     pageRendering = false;
     if (pageNumPending !== null) {
-      renderPage(pageNumPending);
+      renderPage(pageNumPending, canvasArgument);
       pageNumPending = null;
     }
   });

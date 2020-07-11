@@ -48,7 +48,7 @@ export default {
   methods: {
     handleViewError(error) {
       // Dismiss errors after given amount of time
-      const milisecondsToDismiss = 3000;
+      const milisecondsToDismiss = 5000;
       clearTimeout(this.errorTimeout);
       this.errorTimeout = setTimeout(() => {
         this.error = null;
@@ -63,14 +63,14 @@ export default {
   font-family: 'Rock Salt', cursive;
   color: #fff;
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 18px;
+  left: 32px;
 }
 .content-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  margin-top: 150px;
 }
 a {
   text-decoration: none;
