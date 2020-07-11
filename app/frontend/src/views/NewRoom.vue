@@ -28,7 +28,6 @@ export default {
   },
   setup(props, { emit }) {
     const router = useRouter();
-    // TODO: Add error display
     // TODO: Add comments
     // TODO: Add room styling
     // TODO: Add mobile styling

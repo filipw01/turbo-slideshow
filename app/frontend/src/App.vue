@@ -11,9 +11,16 @@
     </div>
     <div class="content-wrapper">
       <div class="content">
-        <router-view></router-view>
+        <router-view @error="handleViewError"></router-view>
       </div>
     </div>
+    <transition name="message">
+      <error-message
+        v-if="error"
+        :message="error"
+        @dismiss-error="error = null"
+      />
+    </transition>
     <router-link to="/">
       <h1 class="title">
         Turbo SlideShow
@@ -24,11 +31,28 @@
 
 <script>
 import Stain from './components/Stain.vue';
+import ErrorMessage from './components/ErrorMessage.vue';
 
 export default {
   name: 'App',
   components: {
     Stain,
+    ErrorMessage,
+  },
+  data() {
+    return {
+      error: null,
+      errorTimeout: null,
+    };
+  },
+  methods: {
+    handleViewError(error) {
+      clearTimeout(this.errorTimeout);
+      this.errorTimeout = setTimeout(() => {
+        this.error = null;
+      }, 3000);
+      this.error = error;
+    },
   },
 };
 </script>
@@ -80,6 +104,32 @@ a {
     0px 6px 12px rgba(104, 104, 104, 0.12),
     0px 2px 6px rgba(104, 104, 104, 0.13),
     0px 1px 4px rgba(104, 104, 104, 0.2);
+}
+.message-enter-active {
+  animation: slide-in-down 0.5s;
+}
+.message-leave-active {
+  animation: slide-out-right 0.5s;
+}
+@keyframes slide-in-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+@keyframes slide-out-right {
+  0% {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100px);
+  }
 }
 </style>
 <style>

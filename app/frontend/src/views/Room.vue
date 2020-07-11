@@ -65,7 +65,7 @@ export default {
           await setPdfSource(source);
           pageNumber.value = 1;
         })
-        .catch((err) => emit('error', err));
+        .catch((error) => emit('error', error));
     }
     function joinErrorHandle() {
       router.go(-1);
