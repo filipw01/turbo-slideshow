@@ -10,9 +10,7 @@
       <stain size="medium" />
     </div>
     <router-link to="/">
-      <h1 class="title">
-        Turbo SlideShow
-      </h1>
+      <h1 class="title">Turbo SlideShow</h1>
     </router-link>
     <div class="content-wrapper">
       <div class="content">

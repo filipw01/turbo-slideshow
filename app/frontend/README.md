@@ -1,4 +1,4 @@
-# frontend
+# Turbo SlideShow
 
 ## Project setup
 ```
