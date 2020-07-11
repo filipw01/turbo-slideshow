@@ -160,6 +160,7 @@ canvas {
   border-radius: 12px;
   cursor: pointer;
   overflow: hidden;
+  text-align: center;
 }
 .file-label input {
   display: none;

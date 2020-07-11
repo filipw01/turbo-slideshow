@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app-wrapper">
     <div class="large-stain">
       <stain size="large" />
     </div>
@@ -9,6 +9,11 @@
     <div class="medium-stain">
       <stain size="medium" />
     </div>
+    <router-link to="/">
+      <h1 class="title">
+        Turbo SlideShow
+      </h1>
+    </router-link>
     <div class="content-wrapper">
       <div class="content">
         <router-view @error="handleViewError"></router-view>
@@ -21,11 +26,6 @@
         @dismiss-error="error = null"
       />
     </transition>
-    <router-link to="/">
-      <h1 class="title">
-        Turbo SlideShow
-      </h1>
-    </router-link>
   </div>
 </template>
 
@@ -62,15 +62,14 @@ export default {
 .title {
   font-family: 'Rock Salt', cursive;
   color: #fff;
-  position: absolute;
-  top: 18px;
-  left: 32px;
+  margin-top: 32px;
+  max-width: calc(100% - 64px);
+  margin: 18px auto;
 }
 .content-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 150px;
 }
 a {
   text-decoration: none;
@@ -136,6 +135,10 @@ a {
 </style>
 <style>
 body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
   margin: 0;
 }
 input {

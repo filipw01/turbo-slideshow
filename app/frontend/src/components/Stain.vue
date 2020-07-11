@@ -7,6 +7,7 @@
     viewBox="0 0 467 398"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    style="max-width: 100%"
   >
     <path
       fill-rule="evenodd"

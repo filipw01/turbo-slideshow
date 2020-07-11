@@ -28,7 +28,6 @@ export default {
   },
   setup(props, { emit }) {
     const router = useRouter();
-    // TODO: Add mobile styling
     const roomName = ref('');
     const roomPassword = ref('');
     function createRoom() {
@@ -78,10 +77,6 @@ export default {
   font-size: 34px;
   font-weight: 500;
   line-height: 40px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
-    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
 }
 .flex-column {
   display: flex;
