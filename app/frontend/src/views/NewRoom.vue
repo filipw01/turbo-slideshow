@@ -28,7 +28,6 @@ export default {
   },
   setup(props, { emit }) {
     const router = useRouter();
-    // TODO: Add comments
     // TODO: Add room styling
     // TODO: Add mobile styling
     const roomName = ref('');
@@ -40,6 +39,7 @@ export default {
       });
     }
     function createSuccess() {
+      // Store in session for autojoin on reload in Room.vue
       sessionStorage.setItem(
         'roomPassword',
         roomPassword.value,
@@ -49,7 +49,6 @@ export default {
         name: roomName.value,
         password: roomPassword.value,
       });
-      router.push(`/room/${roomName.value}`);
     }
     function createError(error) {
       emit('error', error);

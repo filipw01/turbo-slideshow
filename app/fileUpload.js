@@ -50,7 +50,7 @@ function setup(socket) {
       }
     } else {
       filePath = `${uploadDir}/${baseName}.pdf`;
-      // Convert it to pdf format with undefined filter (see Libreoffice doc about filter)
+      // Convert it to pdf
       libre.convert(file, ".pdf", undefined, (err, done) => {
         if (err) {
           console.log(`Error converting file: ${err}`);
@@ -59,7 +59,7 @@ function setup(socket) {
             "Error converting file to PDF"
           );
         }
-        // Here in done you have pdf file which you can save or transfer in another stream
+        // Save converted file
         fs.writeFileSync(filePath, done);
         try {
           updateRoomFilePath(socket, filePath);
@@ -69,7 +69,7 @@ function setup(socket) {
       });
     }
   });
-  // Error handler:
+
   fileUpload.on("error", function (event) {
     socket.emit("changePresentation/error", "Couldn't upload the file");
     console.log("Error from fileUpload", event);

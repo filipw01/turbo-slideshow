@@ -11,7 +11,8 @@ const listeningApp = app.listen(port, () =>
 const io = require("socket.io")(listeningApp);
 setupWebsocket(io);
 
-process.stdin.resume(); //so the program will not close instantly
+// So the program will not close instantly
+process.stdin.resume();
 
 function exitHandler() {
   Room.deleteMany({}, (error) => {
@@ -31,15 +32,11 @@ function exitHandler() {
   });
 }
 
-//do something when app is closing
 process.on("exit", exitHandler);
 
-//catches ctrl+c event
+// Catches ctrl+c event
 process.on("SIGINT", exitHandler);
 
-// catches "kill pid" (for example: nodemon restart)
+// Catches "kill pid"
 process.on("SIGUSR1", exitHandler);
 process.on("SIGUSR2", exitHandler);
-
-//catches uncaught exceptions
-// process.on("uncaughtException", exitHandler);

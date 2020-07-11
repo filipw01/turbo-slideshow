@@ -71,6 +71,7 @@ export default {
       router.go(-1);
     }
     onMounted(() => {
+      // Try to rejoin
       const password = sessionStorage.getItem(
         'roomPassword',
       );

@@ -16,6 +16,7 @@ app.get("/", (_req, res) => {
   res.sendFile(path.join(publicPath, "index.html"));
 });
 
+// Send presentation file if user has access to admin folder
 app.post("/srv/:adminId/:fileName", (req, res) => {
   const { password } = req.body;
   const { adminId } = req.params;

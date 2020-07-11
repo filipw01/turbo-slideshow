@@ -47,10 +47,12 @@ export default {
   },
   methods: {
     handleViewError(error) {
+      // Dismiss errors after given amount of time
+      const milisecondsToDismiss = 3000;
       clearTimeout(this.errorTimeout);
       this.errorTimeout = setTimeout(() => {
         this.error = null;
-      }, 3000);
+      }, milisecondsToDismiss);
       this.error = error;
     },
   },
