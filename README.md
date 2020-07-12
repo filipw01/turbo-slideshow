@@ -22,7 +22,7 @@ To run project locally clone this repository
 
 `git clone https://github.com/filipw01/turbo-slideshow`
 
-From /app/frontend
+From `/app/frontend`
 
 1. Install frontend dependencies
 
