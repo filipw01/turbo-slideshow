@@ -4,7 +4,7 @@ import NewRoom from './views/NewRoom.vue';
 import JoinRoom from './views/JoinRoom.vue';
 import Room from './views/Room.vue';
 
-const socket = io('http://localhost:8080');
+const socket = io('');
 
 const router = createRouter({
   history: createWebHistory(),

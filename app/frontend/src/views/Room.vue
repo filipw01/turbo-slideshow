@@ -15,7 +15,13 @@
       <span style="margin-right: 4px" v-if="!isAdmin"
         >Slide number:</span
       >
-      {{ pageNumber }}
+      <input
+        @change="(e) => changePage(e.target.value)"
+        :value="pageNumber"
+        v-if="isAdmin"
+        class="change-page-input"
+      />
+      <span v-else>{{ pageNumber }}</span>
       <button
         v-if="isAdmin"
         @click="() => changePage(pageNumber + 1)"
@@ -49,13 +55,14 @@ export default {
     const router = useRouter();
     const canvas = ref(null);
     const file = ref(null);
-    const pageNumber = ref(0);
+    const pageNumber = ref(null);
     const isAdmin = ref(false);
     if (route.query.admin === 'true') {
       isAdmin.value = true;
     }
 
-    function changePageHandle(newPageNumber) {
+    function changePageHandle(requestedPage) {
+      const newPageNumber = Number(requestedPage);
       const { numPages } = getPdf();
       if (newPageNumber < 1 || newPageNumber > numPages) {
         return;
@@ -67,7 +74,7 @@ export default {
       const password = sessionStorage.getItem(
         'roomPassword',
       );
-      fetch(`http://localhost:8080${presentationPath}`, {
+      fetch(`${presentationPath}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -147,6 +154,13 @@ canvas {
   display: flex;
   align-items: center;
   margin-bottom: 24px;
+}
+.change-page-input {
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  text-align: center;
+  text-indent: 0;
 }
 .change-page-button {
   min-width: auto;

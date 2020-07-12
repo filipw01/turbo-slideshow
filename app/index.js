@@ -1,8 +1,8 @@
+require("dotenv").config();
 const rimraf = require("rimraf");
 const setupWebsocket = require("./websocket");
 const app = require("./express");
 const Room = require("./database");
-require("dotenv").config();
 
 const port = process.env.PORT !== undefined ? process.env.PORT : 8080;
 const listeningApp = app.listen(port, () =>
