@@ -1,7 +1,5 @@
 # Turbo SlideShow
 
-[See it live](https://turbo-slideshow.herokuapp.com/)
-
 - [Turbo SlideShow](#turbo-slideshow)
   - [Running locally](#running-locally)
     - [Requirements](#requirements)
